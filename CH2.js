@@ -141,14 +141,13 @@ export function solveGaussJordan() {
     let A = matrix.map(row => [...row]);
 
     for (let i = 0; i < n; i++) {
-        // 1. Partial Pivoting (لضمان الاستقرار)
+        
         let maxRow = i;
         for (let k = i + 1; k < n; k++) {
             if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) maxRow = k;
         }
         [A[i], A[maxRow]] = [A[maxRow], A[i]];
 
-        // 2. جعل عنصر القطر الرئيسي = 1 (Normalization)
         const pivot = A[i][i];
         if (Math.abs(pivot) < 1e-10) throw new Error('Matrix is singular or nearly singular');
         
@@ -156,7 +155,6 @@ export function solveGaussJordan() {
             A[i][j] /= pivot;
         }
 
-        // 3. تصفير العناصر فوق وتحت القطر الرئيسي
         for (let k = 0; k < n; k++) {
             if (k !== i) {
                 const factor = A[k][i];
@@ -167,7 +165,6 @@ export function solveGaussJordan() {
         }
     }
 
-    // استخراج الحلول من العمود الأخير
     const X = A.map(row => row[n]);
     displayJordanMatrix(A, X);
 }
