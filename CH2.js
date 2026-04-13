@@ -50,7 +50,7 @@ function displayGaussMatrix(finalMatrix, X) {
 
     resultDiv.innerHTML = `<strong>Solution:</strong> X = [ ${X.map(v => v.toFixed(3)).join(', ')} ]`;
 
-    let html = '<tr><td colspan="10" class="text-center bg-secondary text-white">Final Augmented Matrix (Upper Triangular)</td></tr>';
+    let html = '<tr><td colspan="10" class="text-center bg-secondary text-white">Final Matrix</td></tr>';
     
     finalMatrix.forEach(row => {
         html += `<tr>${row.map(v => `<td class="text-center">${v.toFixed(3)}</td>`).join('')}</tr>`;
@@ -141,7 +141,7 @@ export function solveGaussJordan() {
     let A = matrix.map(row => [...row]);
 
     for (let i = 0; i < n; i++) {
-        
+
         let maxRow = i;
         for (let k = i + 1; k < n; k++) {
             if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) maxRow = k;
@@ -178,7 +178,7 @@ function displayJordanMatrix(finalMatrix, X) {
 
     resultDiv.innerHTML = `<strong>Solution:</strong> X = [ ${X.map(v => v.toFixed(3)).join(', ')} ]`;
 
-    let html = '<tr><td colspan="10" class="text-center bg-secondary text-white">Reduced Row Echelon Form (RREF)</td></tr>';
+    let html = '<tr><td colspan="10" class="text-center bg-secondary text-white">final Matrix</td></tr>';
     
     finalMatrix.forEach(row => {
         html += `<tr>${row.map(v => `<td class="text-center">${v.toFixed(3)}</td>`).join('')}</tr>`;
