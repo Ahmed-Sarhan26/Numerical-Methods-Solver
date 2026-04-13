@@ -59,27 +59,6 @@ function displayGaussMatrix(finalMatrix, X) {
     tbody.innerHTML = html;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export function solveLU() {
     const matrixInput = document.getElementById('matrix').value;
     if (!matrixInput) throw new Error('Please enter the matrix');
@@ -149,3 +128,65 @@ function displayLUMatrix(L, U, X) {
 
     tbody.innerHTML = html;
 }
+
+
+
+
+export function solveGaussJordan() {
+    const matrixInput = document.getElementById('matrix').value;
+    if (!matrixInput) throw new Error('Please enter the matrix');
+
+    const matrix = matrixInput.split(';').map(row => row.split(',').map(Number));
+    const n = matrix.length;
+    let A = matrix.map(row => [...row]);
+
+    for (let i = 0; i < n; i++) {
+        // 1. Partial Pivoting (لضمان الاستقرار)
+        let maxRow = i;
+        for (let k = i + 1; k < n; k++) {
+            if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) maxRow = k;
+        }
+        [A[i], A[maxRow]] = [A[maxRow], A[i]];
+
+        // 2. جعل عنصر القطر الرئيسي = 1 (Normalization)
+        const pivot = A[i][i];
+        if (Math.abs(pivot) < 1e-10) throw new Error('Matrix is singular or nearly singular');
+        
+        for (let j = i; j <= n; j++) {
+            A[i][j] /= pivot;
+        }
+
+        // 3. تصفير العناصر فوق وتحت القطر الرئيسي
+        for (let k = 0; k < n; k++) {
+            if (k !== i) {
+                const factor = A[k][i];
+                for (let j = i; j <= n; j++) {
+                    A[k][j] -= factor * A[i][j];
+                }
+            }
+        }
+    }
+
+    // استخراج الحلول من العمود الأخير
+    const X = A.map(row => row[n]);
+    displayJordanMatrix(A, X);
+}
+
+function displayJordanMatrix(finalMatrix, X) {
+    const resultDiv = document.getElementById('result');
+    const tbody = document.querySelector('#table tbody');
+    
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    resultDiv.innerHTML = `<strong>Solution:</strong> X = [ ${X.map(v => v.toFixed(3)).join(', ')} ]`;
+
+    let html = '<tr><td colspan="10" class="text-center bg-secondary text-white">Reduced Row Echelon Form (RREF)</td></tr>';
+    
+    finalMatrix.forEach(row => {
+        html += `<tr>${row.map(v => `<td class="text-center">${v.toFixed(3)}</td>`).join('')}</tr>`;
+    });
+
+    tbody.innerHTML = html;
+}
+

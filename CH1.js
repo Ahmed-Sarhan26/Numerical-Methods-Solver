@@ -1,6 +1,6 @@
 const MAX_ITER = 100
 const DEFAULT_TOL = 0.001
-import { solveGauss, solveLU  } from './CH2.js'
+import { solveGauss, solveLU,solveGaussJordan  } from './CH2.js'
 function evaluate(expr, x) {
     const allowed = /^[0-9+\-*/().x\s^e√sincostanlogln]+$/i
     if (!allowed.test(expr)) throw new Error('Invalid expression')
@@ -41,7 +41,8 @@ function setTableHeader(method) {
         newton:['i','x','f(x)',"f'(x)",'Error'],
         secant:['i','x0','f(x0)','x1','f(x1)','x2','Error'],
         gauss:[],
-         luDecomposition: []
+        luDecomposition: [],
+        gaussJordan: [] 
     }
     columns[method].forEach(c => {
         const th = document.createElement('th')
@@ -69,8 +70,8 @@ function updateInputs() {
     const tolDiv = document.getElementById('tol-input')
 
   
-    if (fxDiv)  fxDiv.style.display = (method === 'gauss' || method === 'luDecomposition') ? 'none' : 'block'
-    if (tolDiv) tolDiv.style.display = (method === 'gauss' || method === 'luDecomposition') ? 'none' : 'block'
+    if (fxDiv) fxDiv.style.display = (method === 'gauss' || method === 'luDecomposition' || method === 'gaussJordan') ? 'none' : 'block'
+if (tolDiv) tolDiv.style.display = (method === 'gauss' || method === 'luDecomposition' || method === 'gaussJordan') ? 'none' : 'block'
     
     container.innerHTML = ''
     const field = (id, label) => `
@@ -85,17 +86,18 @@ function updateInputs() {
         container.innerHTML = field('x0','Initial guess (x₀)')
     } else if (method === 'secant') {
         container.innerHTML = field('x0','x₀') + field('x1','x₁')
-    } else if (method === 'gauss' || method === 'luDecomposition') {
-        container.innerHTML = `
-            <div class="mb-3">
-                <label class="form-label">
-                    Augmented matrix (rows separated by ';', entries by ',')
-                </label>
-                <input class="form-control" id="matrix" 
-                       placeholder="2,1,5,8;1,-1,1,2;3,2,-1,3">
-            </div>`;
-    }
+    } else if (method === 'gauss' || method === 'luDecomposition' || method === 'gaussJordan') {
+    container.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">
+                Augmented matrix (rows separated by ';', entries by ',')
+            </label>
+            <input class="form-control" id="matrix" 
+                   placeholder="2,1,5,8;1,-1,1,2;3,2,-1,3">
+        </div>`;
 }
+}
+
 
 function solve() {
     clearTable()
@@ -118,6 +120,7 @@ function solve() {
             case 'secant':        solveSecant(expr, tol); break
             case 'gauss':         solveGauss(); break
             case 'luDecomposition': solveLU(); break 
+            case 'gaussJordan':   solveGaussJordan(); break 
             default: throw new Error('Unknown method selected')
         }
     } catch (e) {
@@ -142,6 +145,7 @@ function solveBisection(expr, tol) {
     }
     document.getElementById('result').textContent = `Root ≈ ${xr.toFixed(3)}`
 }
+
 
 function solveFalsePosition(expr, tol) {
     let xl = parseFloat(document.getElementById('xl').value)
