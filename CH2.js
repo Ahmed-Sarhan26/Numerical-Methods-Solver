@@ -59,6 +59,7 @@ function displayGaussMatrix(finalMatrix, X) {
     tbody.innerHTML = html;
 }
 
+                               //lu decomposition
 export function solveLU() {
     const matrixInput = document.getElementById('matrix').value;
     if (!matrixInput) throw new Error('Please enter the matrix');
@@ -130,7 +131,7 @@ function displayLUMatrix(L, U, X) {
 }
 
 
-
+                    /* Gauss-Jordan Elimination */
 
 export function solveGaussJordan() {
     const matrixInput = document.getElementById('matrix').value;
@@ -187,3 +188,87 @@ function displayJordanMatrix(finalMatrix, X) {
     tbody.innerHTML = html;
 }
 
+
+                          //cramer's rule
+
+
+function calculateDet(matrix) {
+    let n = matrix.length;
+    let A = matrix.map(row => [...row]);
+    let det = 1;
+    let swaps = 0;
+
+    for (let i = 0; i < n; i++) {
+        let maxRow = i;
+        for (let k = i + 1; k < n; k++) {
+            if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) maxRow = k;
+        }
+        if (maxRow !== i) {
+            [A[i], A[maxRow]] = [A[maxRow], A[i]];
+            swaps++;
+        }
+        if (Math.abs(A[i][i]) < 1e-10) return 0;
+        for (let k = i + 1; k < n; k++) {
+            let factor = A[k][i] / A[i][i];
+            for (let j = i; j < n; j++) { A[k][j] -= factor * A[i][j]; }
+        }
+        det *= A[i][i];
+    }
+    return swaps % 2 === 0 ? det : -det;
+}
+
+export function solveCramer() {
+    const matrixInput = document.getElementById('matrix').value;
+    if (!matrixInput) throw new Error('Please enter the matrix');
+
+    const matrix = matrixInput.split(';').map(row => row.split(',').map(Number));
+    const n = matrix.length;
+    
+    const A = []; const B = [];
+    for (let i = 0; i < n; i++) {
+        A[i] = matrix[i].slice(0, n);
+        B[i] = matrix[i][n];
+    }
+
+    const detA = calculateDet(A);
+    if (Math.abs(detA) < 1e-10) throw new Error('No unique solution (Determinant = 0)');
+
+    let determinants = [];
+    let X = [];
+
+    for (let i = 0; i < n; i++) {
+        let temp = A.map(row => [...row]);
+        for (let j = 0; j < n; j++) {
+            temp[j][i] = B[j];
+        }
+        const d_i = calculateDet(temp);
+        determinants.push(d_i);
+        X.push(d_i / detA);
+    }
+
+    displayCramer(detA, determinants, X);
+}
+
+function displayCramer(detA, determinants, X) {
+    const resultDiv = document.getElementById('result');
+    const tbody = document.querySelector('#table tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    resultDiv.innerHTML = `<strong>Solution:</strong> X = [ ${X.map(v => v.toFixed(3)).join(', ')} ]`;
+
+    let html = `<tr><td colspan="10" class="text-center bg-secondary text-white">Cramer's Rule Results</td></tr>`;
+    html += `<tr class="table-info"><td colspan="10" class="text-center">Main Determinant (Det A) = <b>${detA.toFixed(3)}</b></td></tr>`;
+    
+    determinants.forEach((det, i) => {
+        html += `<tr class="text-center">
+            <td style="width:20%">Det A<sub>${i+1}</sub></td>
+            <td style="width:20%">${det.toFixed(3)}</td>
+            <td>/</td>
+            <td style="width:20%">${detA.toFixed(3)}</td>
+            <td style="width:20%"><b class="text-success">${X[i].toFixed(3)}</b></td>
+        </tr>`;
+    });
+
+    tbody.innerHTML = html;
+}

@@ -1,6 +1,6 @@
 const MAX_ITER = 100
 const DEFAULT_TOL = 0.001
-import { solveGauss, solveLU,solveGaussJordan  } from './CH2.js'
+import { solveGauss, solveLU, solveGaussJordan ,solveCramer  } from './CH2.js'
 function evaluate(expr, x) {
     const allowed = /^[0-9+\-*/().x\s^e√sincostanlogln]+$/i
     if (!allowed.test(expr)) throw new Error('Invalid expression')
@@ -42,7 +42,9 @@ function setTableHeader(method) {
         secant:['i','x0','f(x0)','x1','f(x1)','x2','Error'],
         gauss:[],
         luDecomposition: [],
-        gaussJordan: [] 
+        gaussJordan: [] ,
+        cramer: []
+
     }
     columns[method].forEach(c => {
         const th = document.createElement('th')
@@ -69,9 +71,8 @@ function updateInputs() {
     const fxDiv  = document.getElementById('fx-input')
     const tolDiv = document.getElementById('tol-input')
 
-  
-    if (fxDiv) fxDiv.style.display = (method === 'gauss' || method === 'luDecomposition' || method === 'gaussJordan') ? 'none' : 'block'
-if (tolDiv) tolDiv.style.display = (method === 'gauss' || method === 'luDecomposition' || method === 'gaussJordan') ? 'none' : 'block'
+ if (fxDiv) fxDiv.style.display = (method === 'gauss' || method === 'luDecomposition' || method === 'gaussJordan' || method === 'cramer') ? 'none' : 'block'
+if (tolDiv) tolDiv.style.display = (method === 'gauss' || method === 'luDecomposition' || method === 'gaussJordan' || method === 'cramer') ? 'none' : 'block'
     
     container.innerHTML = ''
     const field = (id, label) => `
@@ -86,7 +87,7 @@ if (tolDiv) tolDiv.style.display = (method === 'gauss' || method === 'luDecompos
         container.innerHTML = field('x0','Initial guess (x₀)')
     } else if (method === 'secant') {
         container.innerHTML = field('x0','x₀') + field('x1','x₁')
-    } else if (method === 'gauss' || method === 'luDecomposition' || method === 'gaussJordan') {
+    } else if (method === 'gauss' || method === 'luDecomposition' || method === 'gaussJordan' || method === 'cramer') {
     container.innerHTML = `
         <div class="mb-3">
             <label class="form-label">
@@ -121,6 +122,7 @@ function solve() {
             case 'gauss':         solveGauss(); break
             case 'luDecomposition': solveLU(); break 
             case 'gaussJordan':   solveGaussJordan(); break 
+            case 'cramer':        solveCramer(); break
             default: throw new Error('Unknown method selected')
         }
     } catch (e) {
