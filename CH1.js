@@ -214,8 +214,39 @@ function solveSecant(expr, tol) {
     document.getElementById('result').textContent = `Root ≈ ${x1.toFixed(3)}`
 }
 
+
+function exportToPDF() {
+    // 1. استهدف عنصر النتيجة والجدول فقط وابعد عن الـ Card اللي فيه ظل وخلفية معقدة
+    const element = document.getElementById('table-section').parentElement; 
+
+    if (!element) {
+        alert("No results to export!");
+        return;
+    }
+
+    const opt = {
+        margin:       [0.5, 0.5],
+        filename:     'Numerical_Results.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+            scale: 2, 
+            useCORS: true,
+            // السر هنا: بنجبره يتجاهل الصور اللي مش فاهمها ويركز على النصوص والجداول
+            logging: false,
+            backgroundColor: '#ffffff' // بنخلي الخلفية بيضاء سادة للـ PDF
+        },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // 2. التنفيذ
+    html2pdf().set(opt).from(element).save().catch(err => {
+        console.error("PDF Export failed:", err);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     updateInputs();
     document.getElementById('method').addEventListener('change', updateInputs);
     document.getElementById('solveBtn').addEventListener('click', solve);
+    document.getElementById('exportBtn').addEventListener('click', exportToPDF);
 });
