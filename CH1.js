@@ -141,7 +141,7 @@ function solveBisection(expr, tol) {
         const fxl = evaluate(expr, xl)
         const fxu = evaluate(expr, xu)
         const fxr = evaluate(expr, xr)
-        addRow([i, xl, fxl, xu, fxu, xr, fxr, err])
+        addRow([i, xl, fxl, xu, fxu, xr, fxr, (err * 100).toFixed(2) + '%'])
         if (fxl * fxr < 0) xu = xr; else xl = xr
         old = xr; i++
     }
@@ -160,7 +160,7 @@ function solveFalsePosition(expr, tol) {
         xr = xu - (fxu * (xl - xu)) / (fxl - fxu)
         err = i > 1 ? Math.abs((xr - old) / (xr || 1)) : 1
         const fxr = evaluate(expr, xr)
-        addRow([i, xl, fxl, xu, fxu, xr, fxr, err])
+        addRow([i, xl, fxl, xu, fxu, xr, fxr, (err * 100).toFixed(2) + '%'])
         if (fxl * fxr < 0) xu = xr; else xl = xr
         old = xr; i++
     }
@@ -174,7 +174,7 @@ function solveFixedPoint(expr, tol) {
     while (err > tol && i <= MAX_ITER) {
         const xn = evaluate(expr, x)
         err = Math.abs((xn - x) / (xn || 1))
-        addRow([i, x, xn, err])
+        addRow([i, x, xn, (err * 100).toFixed(2) + '%'])
         x = xn; i++
     }
     document.getElementById('result').textContent = `Root ≈ ${x.toFixed(3)}`
@@ -191,7 +191,7 @@ function solveNewton(expr, tol) {
         if (dfx === 0) throw new Error('Derivative became zero')
         const xn = x - fx / dfx
         err = Math.abs((xn - x) / (xn || 1))
-        addRow([i, x, fx, dfx, err])
+        addRow([i, x, fx, dfx, (err * 100).toFixed(2) + '%'])
         x = xn; i++
     }
     document.getElementById('result').textContent = `Root ≈ ${x.toFixed(3)}`
@@ -208,7 +208,7 @@ function solveSecant(expr, tol) {
         if (f0 === f1) throw new Error('Division by zero (f(x0) == f(x1))')
         const x2 = x1 - f1 * (x0 - x1) / (f0 - f1)
         err = Math.abs((x2 - x1) / (x2 || 1))
-        addRow([i, x0, f0, x1, f1, x2, err])
+        addRow([i, x0, f0, x1, f1, x2, (err * 100).toFixed(2) + '%'])
         x0 = x1; x1 = x2; i++
     }
     document.getElementById('result').textContent = `Root ≈ ${x1.toFixed(3)}`
