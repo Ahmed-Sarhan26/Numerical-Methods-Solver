@@ -216,7 +216,6 @@ function solveSecant(expr, tol) {
 
 
 function exportToPDF() {
-    // 1. استهدف عنصر النتيجة والجدول فقط وابعد عن الـ Card اللي فيه ظل وخلفية معقدة
     const element = document.getElementById('table-section').parentElement; 
 
     if (!element) {
@@ -231,14 +230,11 @@ function exportToPDF() {
         html2canvas:  { 
             scale: 2, 
             useCORS: true,
-            // السر هنا: بنجبره يتجاهل الصور اللي مش فاهمها ويركز على النصوص والجداول
             logging: false,
-            backgroundColor: '#ffffff' // بنخلي الخلفية بيضاء سادة للـ PDF
+            backgroundColor: '#ffffff' 
         },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
-
-    // 2. التنفيذ
     html2pdf().set(opt).from(element).save().catch(err => {
         console.error("PDF Export failed:", err);
     });
