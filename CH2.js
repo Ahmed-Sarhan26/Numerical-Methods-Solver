@@ -1,35 +1,18 @@
 
 export function solveGauss() {
-    const matrixInput = document.getElementById('matrix').value;
-    if (!matrixInput) throw new Error('Please enter the matrix');
-
-    
-    const matrix = matrixInput.split(';').map(row => row.split(',').map(Number));
-    const n = matrix.length;
-    
-    if (matrix[0].length !== n + 1) {
-        throw new Error('Invalid matrix dimensions. Expected augmented matrix (n x n+1)');
-    }
-
-    let A = matrix.map(row => [...row]); 
-
-    
+    const input = document.getElementById('matrix').value;
+    if (!input) throw new Error('Enter matrix');
+    let A = input.split(';').map(row => row.split(',').map(Number));
+    let n = A.length;
     for (let i = 0; i < n; i++) {
-        let maxRow = i;
         for (let k = i + 1; k < n; k++) {
-            if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) maxRow = k;
-        }
-        [A[i], A[maxRow]] = [A[maxRow], A[i]];
-
-        for (let k = i + 1; k < n; k++) {
-            const factor = A[k][i] / A[i][i];
+            let factor = A[k][i] / A[i][i];
             for (let j = i; j <= n; j++) {
                 A[k][j] -= factor * A[i][j];
             }
         }
     }
-
-    const X = Array(n).fill(0);
+    let X = Array(n).fill(0);
     for (let i = n - 1; i >= 0; i--) {
         let sum = 0;
         for (let j = i + 1; j < n; j++) {
